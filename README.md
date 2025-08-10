@@ -65,66 +65,16 @@ Note: These trees are produced by this script for convenience and portability. T
 
 ---
 
-## Usage Details
+## Commands and Usage
 
-```bash
-Usage:
-  build_agents.sh <cursor|claude|opencode|all> [--out DIR] [--force]
+- **/analyze**: See [`commands/Analyze.md`](commands/Analyze.md)
+- **/refactor**: See [`commands/Refactor.md`](commands/Refactor.md)
 
-Examples:
-  ./build_agents.sh cursor
-  ./build_agents.sh claude --out dist/claude
-  ./build_agents.sh all --force
-```
+Use with:
 
-- **Auto-detection**: The script finds the nearest folder containing `AGENTS.md` and `commands/*.md` based on the script’s location. Works when run from this repo or when copied elsewhere.
-- **Safety**: The script uses `set -euo pipefail` and will abort on errors.
-
-Troubleshooting:
-
-- "permission denied": run `chmod +x ./build_agents.sh`
-- "Unknown app": use one of `cursor`, `claude`, `opencode`, or `all`
-- "already exists": add `--force` to overwrite the output directory
-- "Could not find source directory": ensure `AGENTS.md` and at least one `commands/*.md` exist near the script
-
----
-
-## Included Commands
-
-- **/analyze**: Maintainability and defensive programming audit. See [`commands/Analyze.md`](commands/Analyze.md).
-- **/refactor**: Apply early returns, add validations, deduplicate, or rewrite. See [`commands/Refactor.md`](commands/Refactor.md).
-
-How to use:
-
-- Cursor: Use your `.cursorrules` and paste from `.cursor/commands` when needed.
-- Claude Code: Use `.claude/commands/*.md` for slash commands; attach `.claude/knowledge/AGENTS.md` in the IDE if desired.
-- opencode: Keep `AGENTS.md` at project root; `opencode.json` includes `AGENTS.md` and `commands/*.md` via `instructions`.
-
----
-
-## Philosophy (Short Version)
-
-See full details in [`AGENTS.md`](AGENTS.md). The key ideas:
-
-- **Early returns** to minimize nesting (max 3 levels)
-- **Functions <50 lines** with single responsibility
-- **Start in one file**, avoid premature abstractions
-- **Defensive by default**: validate inputs, check errors, safe access
-- **Rewrite instead of patching** if a fix takes >3 lines
-
----
-
-## Project Layout
-
-```
-Agents/
-├── AGENTS.md
-├── README.md
-├── build_agents.sh
-└── commands/
-    ├── Analyze.md
-    └── Refactor.md
-```
+- Cursor: `.cursorrules` + `.cursor/commands/*.md`
+- Claude Code: `.claude/commands/*.md` and optionally attach `.claude/knowledge/AGENTS.md`
+- opencode: `AGENTS.md` at root; `opencode.json` includes `AGENTS.md` and `commands/*.md`
 
 ---
 
@@ -134,16 +84,9 @@ Contributions are welcome. Keep changes simple, defensive, and readable. Favor c
 
 ---
 
-## License
-
-No license file is provided yet. If you plan to use or distribute this project, add a license appropriate to your needs (e.g., MIT, Apache-2.0).
-
----
-
 ## References
 
-- opencode (terminal AI coding agent): `https://github.com/sst/opencode`
-- opencode Rules docs: `https://opencode.ai/docs/rules/`
+- Opencode Rules docs: `https://opencode.ai/docs/rules/`
 - Claude Code slash commands: `https://docs.anthropic.com/en/docs/claude-code/slash-commands`
 
 
