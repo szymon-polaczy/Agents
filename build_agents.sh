@@ -158,14 +158,16 @@ EOF
 build_claude() {
   local out="${OUT_DIR:-$DEFAULT_DIST_DIR/claude}"
   ensure_outdir "$out"
-  mkdir -p "$out/knowledge" "$out/commands"
-  cp "$SOURCE_DIR/AGENTS.md" "$out/knowledge/AGENTS.md"
-  copy_command_markdowns "$SOURCE_DIR/commands" "$out/commands"
+  mkdir -p "$out/.claude/commands" "$out/.claude/knowledge"
+  # Knowledge bundle (optional, attach via IDE)
+  cp "$SOURCE_DIR/AGENTS.md" "$out/.claude/knowledge/AGENTS.md"
+  # Slash command prompt files
+  copy_command_markdowns "$SOURCE_DIR/commands" "$out/.claude/commands"
   cat > "$out/README.txt" <<'EOF'
-Claude payload
-- Move this folder into your project (anywhere in workspace).
-- In Claude Code, add knowledge: attach knowledge/AGENTS.md once per workspace.
-- Use commands/*.md as ready-to-paste prompts.
+Claude Code payload
+- Place this in your project.
+- Slash commands: .claude/commands/*.md (frontmatter/prompt files)
+- Knowledge (optional): .claude/knowledge/AGENTS.md (attach via IDE)
 EOF
   echo "Built Claude tree at $out"
 }
@@ -173,69 +175,26 @@ EOF
 build_opencode() {
   local out="${OUT_DIR:-$DEFAULT_DIST_DIR/opencode}"
   ensure_outdir "$out"
-  mkdir -p "$out/.vscode" "$out/agents"
-  # Copy AGENTS.md and commands for reference
-  copy_common_payload "$out/agents"
-  # Place AGENTS.md at project root for potential auto-load by tools that read root-level instructions
+  # opencode reads AGENTS.md from project root; include minimal opencode.json
   cp "$SOURCE_DIR/AGENTS.md" "$out/AGENTS.md"
-  # Create VS Code-compatible snippets for quick command insertion
-  cat > "$out/.vscode/agents.code-snippets" <<'EOF'
+  mkdir -p "$out/commands"
+  copy_command_markdowns "$SOURCE_DIR/commands" "$out/commands"
+  cat > "$out/opencode.json" <<'EOF'
 {
-  "Analyze Defensive": {
-    "prefix": "/analyze defensive",
-    "body": ["/analyze defensive"],
-    "description": "Focus on missing validations"
-  },
-  "Analyze Structure": {
-    "prefix": "/analyze structure",
-    "body": ["/analyze structure"],
-    "description": "Check nesting and function size"
-  },
-  "Analyze Duplication": {
-    "prefix": "/analyze duplication",
-    "body": ["/analyze duplication"],
-    "description": "Find repeated code"
-  },
-  "Analyze Performance": {
-    "prefix": "/analyze performance",
-    "body": ["/analyze performance"],
-    "description": "Identify bottlenecks"
-  },
-  "Refactor Early Returns": {
-    "prefix": "/refactor early-returns",
-    "body": ["/refactor early-returns"],
-    "description": "Convert to guard clauses"
-  },
-  "Refactor Defensive": {
-    "prefix": "/refactor defensive",
-    "body": ["/refactor defensive"],
-    "description": "Add validation and checks"
-  },
-  "Refactor Deduplicate": {
-    "prefix": "/refactor deduplicate",
-    "body": ["/refactor deduplicate"],
-    "description": "Extract repeated code"
-  },
-  "Refactor Rewrite": {
-    "prefix": "/refactor rewrite",
-    "body": ["/refactor rewrite"],
-    "description": "Complete rewrite of complex code"
-  },
-  "Refactor Simplify": {
-    "prefix": "/refactor simplify",
-    "body": ["/refactor simplify"],
-    "description": "Remove unnecessary complexity"
-  }
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "AGENTS.md",
+    "commands/*.md"
+  ]
 }
 EOF
   cat > "$out/README.txt" <<'EOF'
-OpenCode payload
+opencode payload
 - Move the contents of this folder into your project root.
-- .vscode/agents.code-snippets provides quick command insertion.
-- AGENTS.md is placed at the project root.
-- agents/ contains a copy of AGENTS.md and commands/*.md for reference.
+- AGENTS.md is the primary rules file consumed by opencode.
+- commands/ contains prompt/instruction files; opencode.json includes them via instructions.
 EOF
-  echo "Built OpenCode tree at $out"
+  echo "Built opencode tree at $out"
 }
 
 case "$APP" in
