@@ -63,8 +63,10 @@ function process($data) {
     $id = intval($data['id']);
     return doWork($id);
 }
+```
 Complete Rewrite
-javascript// BEFORE: Nested nightmare
+```javascript
+// BEFORE: Nested nightmare
 function handleUser(user) {
     if (user) {
         if (user.active) {
@@ -95,6 +97,7 @@ function handleUser(user) {
         ? processAdmin(user) 
         : processUser(user);
 }
+```
 Output Format:
 markdown## Refactoring Plan
 - Strategy: [Quick Fix / Complete Rewrite]
